@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AWS from "aws-sdk";
 AWS.config.update({
   region: "us-east-1",
@@ -11,27 +11,47 @@ AWS.config.update({
 
 function App() {
   const [covidData, setCovidData] = useState(null);
-  const [connected, setConnected] = useState(false);
+  const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(
+    ws.current = new WebSocket(
       "wss://0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod"
     );
-    ws.onopen = (event) => {
-      console.log("[WS] => connection established ", event);
-      ws.send(
-        JSON.stringify({
-          action: "dispatchData",
-          data: "England",
-        })
+    ws.current.onopen = () => {
+      console.log("ws opened");
+
+      let time = 2;
+      const timeValue = setInterval(() => {
+        time = time - 1;
+        if (time <= 0) {
+          clearInterval(timeValue);
+        }
+        ws.current!.send(
+          JSON.stringify({ action: "dispatchData", data: "england" })
+        );
+      }, 1000);
+    };
+    ws.current.onclose = () => console.log("ws closed");
+
+    const wsCurrent = ws.current;
+
+    return () => {
+      wsCurrent.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!ws.current) return;
+
+    ws.current.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      console.log(
+        "🚀 ~ file: App.tsx ~ line 48 ~ useEffect ~ message",
+        message
       );
-      setConnected(true);
+      setCovidData(message);
     };
-    ws.onmessage = function (event) {
-      console.log("[WS] => data recieved ", event.data);
-      setCovidData(event.data);
-    };
-  }, [connected]);
+  }, []);
 
   return <div className="App"></div>;
 }
