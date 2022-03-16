@@ -22,7 +22,7 @@ export function uploadCovidData(data: CovidData) {
   const params = {
     TableName: "CovidStats",
     Item: {
-      region: region,
+      region: region.toLowerCase(),
       timestamp: timestamp,
       daily_cases: cases,
       daily_deaths: deaths,

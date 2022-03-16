@@ -38,15 +38,14 @@ const dispatchToAll = async (connIds, data) => {
 };
 
 exports.handler = async (event) => {
-  // const sentiment = (await db.getTableData("TweetsSentiment")).Items;
-  // const predictions = (await db.getTableData("CovidPredictions")).Items;
-  // const covidData = await db.queryTableData();
 
   // if new user is connected
   if (event.requestContext) {
-      const sentiment = await db.queryTableWithLimit("TweetsSentiment",event.body.data,100)
-      console.log("[Sentiment] =>  ", sentiment)
-    
+      const region = event.body.data;
+      const sentiment = await db.queryTableWithLimit("TweetsSentiment",region,100);
+      const predictions = await db.getTableData("CovidPredictions",region)
+      const covidData = await db.queryTableData("CovidStats", region);
+      console.log("[wsDispatch] =>  ", predictions);
   }
   // if there is new predictions/sentiment data
   if (event.Records) {
