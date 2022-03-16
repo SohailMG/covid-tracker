@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { GraphData } from "./utils/DataInterface";
 import AWS from "aws-sdk";
+
 AWS.config.update({
   region: "us-east-1",
   credentials: {
@@ -10,7 +12,7 @@ AWS.config.update({
 });
 
 function App() {
-  const [covidData, setCovidData] = useState(null);
+  const [covidData, setCovidData] = useState<GraphData[] | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -42,7 +44,6 @@ function App() {
 
   useEffect(() => {
     if (!ws.current) return;
-
     ws.current.onmessage = (e) => {
       const message = JSON.parse(e.data);
       console.log(

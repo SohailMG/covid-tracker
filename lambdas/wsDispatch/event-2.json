@@ -1,0 +1,116 @@
+{
+  "Records": [
+    {
+      "eventID": "43b57994dccb3450c2b188236c65d38d",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1647190712,
+        "Keys": {
+          "region": {
+            "S": "england"
+          },
+          "timestamp": {
+            "N": "1646934262033"
+          }
+        },
+        "NewImage": {
+          "TweetId": {
+            "N": "12444212341"
+          },
+          "timestamp": {
+            "N": "1645023953"
+          },
+          "region": {
+            "S": "england"
+          },
+          "sentiment": {
+            "M": {
+              "Sentiment": {
+                "S": "NEGATIVE"
+              },
+              "SentimentScore": {
+                "M": {
+                  "Neutral": {
+                    "N": "0.22893355786800385"
+                  },
+                  "Negative": {
+                    "N": "0.6858948469161987"
+                  },
+                  "Positive": {
+                    "N": "0.08029676973819733"
+                  },
+                  "Mixed": {
+                    "N": "0.0048747556284070015"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "SequenceNumber": "18638300000000021442147990",
+        "SizeBytes": 40145,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:714258586253:table/TweetsSentiment/stream/2022-03-12T12:34:22.431"
+    },
+    {
+      "eventID": "43b57994dccb3450c2b188236c65d38d",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1647190712,
+        "Keys": {
+          "region": {
+            "S": "england"
+          },
+          "timestamp": {
+            "N": "1646934262033"
+          }
+        },
+        "NewImage": {
+          "TweetId": {
+            "N": "12444212341"
+          },
+          "timestamp": {
+            "N": "1645023953"
+          },
+          "region": {
+            "S": "england"
+          },
+          "sentiment": {
+            "M": {
+              "Sentiment": {
+                "S": "NEGATIVE"
+              },
+              "SentimentScore": {
+                "M": {
+                  "Neutral": {
+                    "N": "0.22893355786800385"
+                  },
+                  "Negative": {
+                    "N": "0.6858948469161987"
+                  },
+                  "Positive": {
+                    "N": "0.08029676973819733"
+                  },
+                  "Mixed": {
+                    "N": "0.0048747556284070015"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "SequenceNumber": "18638300000000021442147990",
+        "SizeBytes": 40145,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:714258586253:table/TweetsSentiment/stream/2022-03-12T12:34:22.431"
+    }
+  ]
+}

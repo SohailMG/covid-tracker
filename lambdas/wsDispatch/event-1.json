@@ -1,0 +1,26 @@
+{
+  "requestContext": {
+    "routeKey": "dispatchData",
+    "messageId": "NiINPeZNIAMCFiQ=",
+    "eventType": "MESSAGE",
+    "extendedRequestId": "NiINPG4YoAMFYlA=",
+    "requestTime": "14/Feb/2022:13:06:54 +0000",
+    "messageDirection": "IN",
+    "stage": "prod",
+    "connectedAt": 1644843921907,
+    "requestTimeEpoch": 1644844014173,
+    "identity": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.87 Safari/537.36",
+      "sourceIp": "217.43.123.21"
+    },
+    "requestId": "NiINPG4YoAMFYlA=",
+    "domainName": "0p40kzqqce.execute-api.us-east-1.amazonaws.com",
+    "connectionId": "NiH-1cJ9IAMCFiQ=",
+    "apiId": "0p40kzqqce"
+  },
+  "body": {
+    "action": "dispatchData",
+    "data": "england"
+  },
+  "isBase64Encoded": false
+}
