@@ -36,7 +36,7 @@ export interface CovidPredictions {
 }
 
 export interface GraphData {
-  covidData: CovidData;
+  covidData: CovidData[];
   predictions: CovidPredictions;
-  sentiment: TwitterSentiment;
+  sentiment: TwitterSentiment[];
 }

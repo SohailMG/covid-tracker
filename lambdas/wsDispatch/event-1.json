@@ -20,7 +20,7 @@
   },
   "body": {
     "action": "dispatchData",
-    "data": "england"
+    "data": "Scotland"
   },
   "isBase64Encoded": false
 }

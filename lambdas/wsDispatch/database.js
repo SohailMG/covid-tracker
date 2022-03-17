@@ -60,3 +60,22 @@ module.exports.queryTableWithLimit = async(tableName,partKey,limit)=>{
    return covidData;
 }
 
+module.exports.queryPredictions = async(partKey)=>{
+ const params = {
+   TableName: "CovidPredictions",
+   ExpressionAttributeNames: { "#region": "region", "#timestamp": "timestamp" }, // avoiding reserved keywords exceptions
+   KeyConditionExpression: "#region = :rgn and #timestamp < :startDate",
+   ExpressionAttributeValues: {
+     ":rgn": partKey,
+     ":startDate": Date.now(),
+   },
+   ScanIndexForward: false, // ascending order
+   Limit:1,
+ };
+
+ const { Items: covidData } = await documentClient.query(params).promise();
+ return covidData[0];
+
+
+}
+

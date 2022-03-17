@@ -38,14 +38,25 @@ const dispatchToAll = async (connIds, data) => {
 };
 
 exports.handler = async (event) => {
-
   // if new user is connected
   if (event.requestContext) {
-      const region = event.body.data;
-      const sentiment = await db.queryTableWithLimit("TweetsSentiment",region,100);
-      const predictions = await db.getTableData("CovidPredictions",region)
-      const covidData = await db.queryTableData("CovidStats", region);
-      console.log("[wsDispatch] =>  ", predictions);
+    const region = event.body.data;
+    const { connectionId: connId } = event.requestContext;
+    const sentiment = await db.queryTableWithLimit(
+      "TweetsSentiment",
+      region.toLowerCase(),
+      50
+    );
+    const predictions = await db.queryPredictions(region);
+    const covidData = await db.queryTableData(
+      "CovidStats",
+      region.toLowerCase()
+    );
+    await dispatchToOne(connId, { sentiment, predictions});
+    return {
+      statusCode: 200,
+      body: JSON.stringify("Data sent to user with ID ", connId),
+    };
   }
   // if there is new predictions/sentiment data
   if (event.Records) {
@@ -58,7 +69,11 @@ exports.handler = async (event) => {
       const covidData = await db.queryTableData("CovidStats", region.S);
       // fetching connection ids of connected users
       const { Items: connIds } = await db.getTableData("WebSocketClients");
-      await dispatchToAll(connIds, { covidData, predictions,event:"predictions" });
+      await dispatchToAll(connIds, {
+        covidData,
+        predictions,
+        event: "predictions",
+      });
     }
     // if only tweets sentiment table updated
     else {
