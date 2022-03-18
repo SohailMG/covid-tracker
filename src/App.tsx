@@ -5,6 +5,9 @@ import { GraphData } from "./utils/DataInterface";
 import AWS from "aws-sdk";
 import DataBox from "./components/DataBox";
 type totals = { totalCases: number; totalDeaths: number };
+type SetType = {
+  [key: string]: any;
+};
 AWS.config.update({
   region: "us-east-1",
   credentials: {
@@ -15,16 +18,31 @@ AWS.config.update({
 });
 
 function App() {
-  const [covidData, setCovidData] = useState<any>([]);
+  const [graphData, setGraphData] = useState<any>([]);
   const [totalData, setTotalData] = useState<totals | null>(null);
+  const [mySet, setMySet] = useState<SetType[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState("Scotland");
   const ws = useRef<WebSocket | null>(null);
+
+  // requests data for given region
+  function requestRegionData(e: React.ChangeEvent<HTMLSelectElement>) {
+    setGraphData([]);
+    setSelectedRegion(e.target.value);
+    ws.current!.send(
+      JSON.stringify({ action: "dispatchData", data: e.target.value })
+    );
+    ws.current!.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setGraphData((prev: any) => [...prev, message]);
+    };
+  }
 
   useEffect(() => {
     ws.current = new WebSocket(
       "wss://0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod"
     );
     ws.current.onopen = () => {
-      console.log("ws opened");
+      console.log("[WS] => Connection opened");
 
       let time = 1;
       const timeValue = setInterval(() => {
@@ -37,7 +55,7 @@ function App() {
         );
       }, 1000);
     };
-    ws.current.onclose = () => console.log("ws closed");
+    ws.current.onclose = () => console.log("[WS] => Connection closed");
 
     const wsCurrent = ws.current;
 
@@ -50,16 +68,15 @@ function App() {
     if (!ws.current) return;
     ws.current.onmessage = (e) => {
       const message = JSON.parse(e.data);
-      console.log(
-        "🚀 ~ file: App.tsx ~ line 48 ~ useEffect ~ message",
-        message
-      );
-      setCovidData((prev: any) => [...prev, message]);
-      console.log(covidData);
+      console.log("[WS] => Message recieved from Api ", message);
+      setGraphData((prev: any) => [...prev, message]);
       const totals = getTotals(message);
       setTotalData(totals);
     };
-  }, [covidData]);
+    return () => {
+      console.log("Cleanup");
+    };
+  }, [graphData, mySet]);
 
   function getTotals(data: GraphData) {
     const totalCases = data.covidData.reduce((prev, cur) => {
@@ -90,10 +107,14 @@ function App() {
             <path
               d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z"
               fill="#648299"
-              fill-rule="nonzero"
+              fillRule="nonzero"
             />
           </svg>
-          <select className="border border-gray-300 rounded-full font-bold text-gray-200 h-10 pl-5 pr-10 bg-blue-800 hover:border-gray-400 focus:outline-none appearance-none">
+          <select
+            value={selectedRegion}
+            onChange={(e) => requestRegionData(e)}
+            className="border border-gray-300 rounded-full font-bold text-gray-200 h-10 pl-5 pr-10 bg-blue-800 hover:border-gray-400 focus:outline-none appearance-none"
+          >
             <option>England</option>
             <option>Wales</option>
             <option>Scotland</option>
@@ -101,7 +122,7 @@ function App() {
           </select>
         </div>
       </header>
-      {covidData && (
+      {graphData && (
         <main className="flex items-center justify-center p-4">
           <div className="flex items-center">
             <DataBox
