@@ -73,9 +73,6 @@ function App() {
       const totals = getTotals(message);
       setTotalData(totals);
     };
-    return () => {
-      console.log("Cleanup");
-    };
   }, [graphData, mySet]);
 
   function getTotals(data: GraphData) {
@@ -126,14 +123,18 @@ function App() {
         <main className="flex items-center justify-center p-4">
           <div className="flex items-center">
             <DataBox
+              dataVal={"daily_cases"}
+              covidData={[...graphData[2].covidData].reverse()}
               label={"Total Cases"}
-              color={"text-red-600"}
+              color={"#ca0000c8"}
               totalData={totalData?.totalCases}
             />
             <hr className="w-32 border-dotted bg-red-800 " />
             <DataBox
+              dataVal={"daily_deaths"}
+              covidData={[...graphData[2].covidData].reverse()}
               label={"Total Deaths"}
-              color={"text-red-800"}
+              color={"#ca0000c8"}
               totalData={totalData?.totalDeaths}
             />
           </div>
