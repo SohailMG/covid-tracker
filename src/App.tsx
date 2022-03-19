@@ -4,6 +4,10 @@ import Logo from "./components/Logo";
 import { GraphData } from "./utils/DataInterface";
 import AWS from "aws-sdk";
 import DataBox from "./components/DataBox";
+import Skeleton from "react-loading-skeleton";
+import SentimentPie from "./components/SentimentPie";
+import { SkeletonView } from "./components/SkeletonView";
+import RegionGraph from "./components/RegionGraph";
 type totals = { totalCases: number; totalDeaths: number };
 type SetType = {
   [key: string]: any;
@@ -86,12 +90,12 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App bg-gray-800 min-h-screen">
       <header className="flex items-center p-4 justify-between">
         <div className="self-start">
           <Logo />
         </div>
-        <h1 className="text-blue-800 text-xl">
+        <h1 className="text-gray-200 text-xl">
           <b>Covid-19 </b>UK Overview
         </h1>
         {/* Dropdown menu */}
@@ -110,7 +114,7 @@ function App() {
           <select
             value={selectedRegion}
             onChange={(e) => requestRegionData(e)}
-            className="border border-gray-300 rounded-full font-bold text-gray-200 h-10 pl-5 pr-10 bg-blue-800 hover:border-gray-400 focus:outline-none appearance-none"
+            className="border border-gray-700 rounded-full font-bold text-gray-200 h-10 pl-5 pr-10 bg-gray-800 hover:bg-gray-800 text-center focus:outline-none appearance-none"
           >
             <option>England</option>
             <option>Wales</option>
@@ -119,18 +123,22 @@ function App() {
           </select>
         </div>
       </header>
-      {graphData && (
-        <main className="flex items-center justify-center p-4">
-          <div className="flex items-center">
+      <main className="flex flex-col items-center justify-center p-4">
+        {graphData.length > 2 ? (
+          <div className="flex items-end space-x-2">
             <DataBox
+              key={1}
               dataVal={"daily_cases"}
               covidData={[...graphData[2].covidData].reverse()}
               label={"Total Cases"}
-              color={"#ca0000c8"}
+              color={"#1E41AF"}
               totalData={totalData?.totalCases}
             />
-            <hr className="w-32 border-dotted bg-red-800 " />
+            {graphData.length > 1 && (
+              <SentimentPie sentiment={graphData[0].sentiment} />
+            )}
             <DataBox
+              key={2}
               dataVal={"daily_deaths"}
               covidData={[...graphData[2].covidData].reverse()}
               label={"Total Deaths"}
@@ -138,8 +146,20 @@ function App() {
               totalData={totalData?.totalDeaths}
             />
           </div>
-        </main>
-      )}
+        ) : (
+          <SkeletonView />
+        )}
+
+        {/* line graph visual */}
+        {graphData.length > 2 && (
+          <RegionGraph
+            predictions={
+              JSON.parse(graphData[1].predictions.predictions).predictions
+            }
+            covidData={graphData[2].covidData}
+          />
+        )}
+      </main>
     </div>
   );
 }

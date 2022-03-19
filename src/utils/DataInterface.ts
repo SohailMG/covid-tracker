@@ -40,3 +40,10 @@ export interface GraphData {
   predictions: CovidPredictions;
   sentiment: TwitterSentiment[];
 }
+
+export interface CovidTableData {
+  region: string;
+  daily_cases: number[];
+  daily_deaths: number[];
+  timestamp: number;
+}
