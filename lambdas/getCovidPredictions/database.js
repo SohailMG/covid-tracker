@@ -5,21 +5,21 @@ AWS.config.update({
 const moment = require("moment");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const regions = ["england", "wales", "scotland", "northern ireland"];
+const regions = ["England", "Wales", "Scotland", "Northern Ireland"];
 
 module.exports.datasetsHandler = async () => {
   // query the last 100 data points from each region
   const testDatasets = await getTestData();
+  console.log("🚀 ~ file: database.js ~ line 13 ~ module.exports.datasetsHandler= ~ testDatasets", testDatasets)
   const [eng, wls, sct, nil] = buildDatasets(testDatasets);
 
   return [
-    { data: eng, endpoint: "eng", region: "england" },
-    { data: wls, endpoint: "wls", region: "wales" },
-    { data: sct, endpoint: "sct", region: "scotland" },
-    { data: nil, endpoint: "nil", region: "norther ireland" },
+    { data: eng, endpoint: "eng", region: "England" },
+    { data: wls, endpoint: "wls", region: "Wales" },
+    { data: sct, endpoint: "sct", region: "Scotland" },
+    { data: nil, endpoint: "nil", region: "Norther Ireland" },
   ];
 };
-// dbHandlers_1();
 
 function buildDatasets(testDatasets) {
   try {
@@ -59,7 +59,7 @@ async function getTestData() {
         },
         KeyConditionExpression: "#region = :rgn and #timestamp < :startDate",
         ExpressionAttributeValues: {
-          ":rgn": region,
+          ":rgn": region.toLowerCase(),
           ":startDate": Date.now(),
         },
         ScanIndexForward: false,

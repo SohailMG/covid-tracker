@@ -27,7 +27,7 @@ export function uploadCovidData(data: CovidData) {
       daily_cases: cases,
       daily_deaths: deaths,
       dose1: dose1 === null ? 0 : dose1,
-      dose2: dose2 === null ? 0 : dose1,
+      dose2: dose2 === null ? 0 : dose2,
     },
   };
   // inserting item into DynamoDB table

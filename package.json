@@ -34,7 +34,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "wsDispatch": "node -e \"console.log(require('./lambdas/wsDispatch/index.js').handler(require('./lambdas/wsDispatch/event-1.json')));\""
+    "wsDispatch": "node -e \"console.log(require('./lambdas/wsDispatch/index.js').handler(require('./lambdas/wsDispatch/event-1.json')));\"",
+    "getPredictions": "node -e \"console.log(require('./lambdas/getCovidPredictions/index.js').handler(require('./lambdas/wsDispatch/event.json')));\""
   },
   "eslintConfig": {
     "extends": [

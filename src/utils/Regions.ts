@@ -24,6 +24,10 @@ export const REGIONS: RegionData[] = [
   },
   {
     name: "northern+ireland",
-    coords: { lat: 55.9533, lng: 3.1883, radius: "100km" },
+    coords: {
+      lat: 54.55061810433951,
+      lng: -6.005602779583032,
+      radius: "100km",
+    },
   },
 ];

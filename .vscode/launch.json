@@ -3,6 +3,21 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
+            "name": "covid-trkr:lambdas/getCovidPredictions/index.handler (nodejs12.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "${workspaceFolder}/",
+                "lambdaHandler": "lambdas/getCovidPredictions/index.handler"
+            },
+            "lambda": {
+                "runtime": "nodejs12.x",
+                "payload": {},
+                "environmentVariables": {}
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
             "name": "getCovidPredictions:index.handler (nodejs14.x)",
             "invokeTarget": {
                 "target": "code",

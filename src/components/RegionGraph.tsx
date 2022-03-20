@@ -34,10 +34,6 @@ function RegionGraph({
 
     const predictionsData = predictions.map((data) => {
       const meanVals = [...yVals, ...data.mean];
-      console.log(
-        "🚀 ~ file: RegionGraph.tsx ~ line 33 ~ predictionsData ~ meanVals",
-        meanVals
-      );
       const q09Vals = [...yVals, ...data.quantiles["0.9"]];
       const q01Vals = [...yVals, ...data.quantiles["0.1"]];
 
@@ -49,10 +45,6 @@ function RegionGraph({
         next50Dates.push(curr);
       }
       const xAxes = [...xVals, ...next50Dates];
-      console.log(
-        "🚀 ~ file: RegionGraph.tsx ~ line 44 ~ predictionsData ~ xAxes",
-        xAxes
-      );
       const predData = [meanVals, q01Vals, q09Vals].map((data, i) => ({
         name: titles[i],
         type: "scatter",

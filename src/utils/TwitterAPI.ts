@@ -5,6 +5,7 @@ import { RegionData } from "./Regions";
 import { uploadTwitterData } from "./dbHandlers";
 
 /* Interface of twitterApi response */
+// type Location = {}
 export interface Tweet {
   text: string;
   id: number;
@@ -26,10 +27,10 @@ export class TwitterAPI {
 
   constructor() {
     this.T = new Twit({
-      consumer_key: String(process.env.TWITTER_CONSUMER_KEY),
-      consumer_secret: String(process.env.TWITTER_API_SECRET),
-      access_token: String(process.env.TWITTER_ACCESS_TOKEN),
-      access_token_secret: String(process.env.TWITTER_ACCESS_SECRET),
+      consumer_key: String(process.env.REACT_APP_TWITTER_CONSUMER_KEY),
+      consumer_secret: String(process.env.REACT_APP_TWITTER_API_SECRET),
+      access_token: String(process.env.REACT_APP_TWITTER_ACCESS_TOKEN),
+      access_token_secret: String(process.env.REACT_APP_TWITTER_ACCESS_SECRET),
       timeout_ms: 0,
       strictSSL: true,
     });
@@ -43,7 +44,7 @@ export class TwitterAPI {
   async fetchTweetsByLocation(region: RegionData): Promise<TweetResponse> {
     return this.T.get("search/tweets", {
       q: "covid",
-      count: 10,
+      count: 50,
       geocode: `${region.coords.lat},${region.coords.lng},${region.coords.radius}`,
     })
       .then((response: { data: any }) => {
@@ -67,12 +68,14 @@ export class TwitterAPI {
       // converting string date to unix timestamp
       const timestamp = moment(new Date(created_at)).unix();
       // uploading tweets to database table
+      const regionName = tweets.region.name.replace("+", " ");
+
       uploadTwitterData({
         text,
         id,
         created_at,
         timestamp,
-        region: tweets.region.name,
+        region: regionName,
       });
     });
   }

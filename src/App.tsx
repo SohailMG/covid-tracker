@@ -77,7 +77,7 @@ function App() {
       const totals = getTotals(message);
       setTotalData(totals);
     };
-  }, [graphData, mySet]);
+  }, [graphData]);
 
   function getTotals(data: GraphData) {
     const totalCases = data.covidData.reduce((prev, cur) => {

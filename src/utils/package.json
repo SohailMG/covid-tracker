@@ -1,0 +1,32 @@
+{
+  "name": "build-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node ./js/main.js",
+    "plotCovidData": "node -e \"console.log(require('./lambdas/plotCovidData/index.js').handler(require('./lambdas/plotCovidData/event.json')));\"",
+    "getCovidPredictions": "node -e \"console.log(require('./lambdas/getCovidPredictions/index.js').handler(require('./lambdas/getCovidPredictions/event.json')));\"",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@types/node": "^17.0.13",
+    "@types/twit": "^2.2.30",
+    "aws-sdk": "^2.1073.0",
+    "axios": "^0.25.0",
+    "dotenv": "^15.0.0",
+    "fs": "^0.0.1-security",
+    "moment": "^2.29.1",
+    "node-fetch": "^3.2.1",
+    "plotly": "^1.0.6",
+    "twit": "^2.2.11",
+    "twitter-api-v2": "^1.10.0",
+    "util": "^0.12.4"
+  }
+}
