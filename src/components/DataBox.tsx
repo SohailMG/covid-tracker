@@ -1,7 +1,17 @@
 import React, { ReactPropTypes, useEffect, useState } from "react";
-import { LineChart, Line, Tooltip, AreaChart, Area } from "recharts";
+import {
+  LineChart,
+  Line,
+  Tooltip,
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+} from "recharts";
 import { CovidTableData } from "../utils/DataInterface";
 import { CovidData } from "../utils/OpenDataApi";
+import { MdCoronavirus } from "react-icons/md";
+import { IoSkullSharp } from "react-icons/io5";
+import CountUp from "react-countup";
 import moment from "moment";
 
 type Props = {
@@ -13,12 +23,13 @@ type Props = {
 };
 
 function DataBox({ totalData, label, color, covidData, dataVal }: Props) {
-  const [days, setDays] = useState(10);
+  const [days, setDays] = useState(covidData.length);
   const [options, setOptions] = useState<number[]>([]);
+  const [newTotal, setnewTotal] = useState<number | null>(null);
 
   const graphData = covidData.map(
     ({ daily_cases, timestamp, daily_deaths }) => ({
-      name: moment.unix(timestamp).format("yyyy-mm-dd"),
+      name: moment.unix(timestamp).format("YYYY-MM-DD"),
       daily_cases,
       daily_deaths,
     })
@@ -29,42 +40,65 @@ function DataBox({ totalData, label, color, covidData, dataVal }: Props) {
     const options = new Array(totalDays)
       .fill(0)
       .map((_, index: number) => (index + 1) * 10);
-    console.log(totalDays);
+    setnewTotal(
+      covidData
+        .slice(covidData.length - days)
+        .reduce((prev, curr) => prev + curr[dataVal], 0)
+    );
     setOptions(options);
-  }, [covidData.length]);
+  }, [covidData, covidData.length, dataVal, days]);
 
   return (
     <div className="flex flex-col items-center border border-dotted border-gray-700 shadow-md rounded-md overflow-hidden">
-      <h1 className={`font-bold text-lg`} style={{ color: color }}>
-        {label}
-      </h1>
+      <span className="flex items-center space-x-2">
+        <h1 className={`font-bold text-lg`} style={{ color: color }}>
+          {label}
+        </h1>
+        {label.includes("Cases") ? (
+          <MdCoronavirus color="#ffff" />
+        ) : (
+          <IoSkullSharp color="#fff" />
+        )}
+      </span>
       <h1 className="text-gray-200 font-extrabold text-xl">
-        {totalData?.toLocaleString()}
+        <CountUp
+          end={newTotal!}
+          duration={2}
+          formattingFn={(newTotal) => newTotal.toLocaleString()}
+        />
       </h1>
       <div className="flex mt-2 space-x-1">
         <label htmlFor="days" className="text-gray-400 text-sm">
-          Last{" "}
+          Show
         </label>
         <select
-          className="border-2 border-dotted border-gray-400 rounded-md"
+          className=" rounded-md outline-none"
           id="days"
           onChange={(e) => setDays(Number(e.target.value))}
         >
-          {options.map((num) => (
-            <option className="font-semibold text-sm text-center" value={num}>
-              {num}
-            </option>
-          ))}
+          <option
+            className="font-semibold text-sm text-center"
+            value={covidData.length}
+          >
+            All
+          </option>
+          <option className="font-semibold text-sm text-center" value={7}>
+            Past week
+          </option>
+          <option className="font-semibold text-sm text-center" value={360}>
+            Past year
+          </option>
+          <option className="font-semibold text-sm text-center" value={30}>
+            Past month
+          </option>
         </select>
-        <label htmlFor="days" className="text-gray-400 text-sm">
-          Days{" "}
-        </label>
       </div>
 
       <AreaChart
+        key={Math.random()}
         width={200}
         height={100}
-        data={graphData.slice(0, days)}
+        data={graphData.slice(graphData.length - days)}
         margin={{
           top: 5,
           right: 0,

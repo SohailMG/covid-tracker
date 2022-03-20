@@ -80,6 +80,7 @@ const renderActiveShape = (props: PropTypes) => {
       />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
       <text
+        onClick={() => console.log("clicked")}
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
         textAnchor={textAnchor}

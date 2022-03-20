@@ -28,17 +28,19 @@ async function main(): Promise<void> {
   // T.extractTweets(tweetsNIL);
 
   const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
-  storeRecordsToTable(covidDatasets);
+  // storeRecordsToTable(covidDatasets);
 }
 
 main();
 
+
 function storeRecordsToTable(covidDatasets: CovidData[][]) {
   for (let dataset of covidDatasets) {
     // plotlyHandler(covidENG);
-    dataset.map((data) => uploadCovidData(data));
-    console.log(
-      "[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]"
-    );
+    console.table(dataset);
+    // dataset.map((data) => uploadCovidData(data));
+    // console.log(
+    //   "[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]"
+    // );
   }
 }

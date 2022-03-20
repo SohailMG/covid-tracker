@@ -14,7 +14,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 /* uploads data to DynamoDB table */
 export function uploadCovidData(data: CovidData) {
   // destructured region data
-  const { date, cases, deaths, dose1, dose2, region } = data;
+  const { date, cases, deaths, dose1, dose2, region, booster } = data;
 
   // date string to timestamp
   const timestamp = moment(new Date(date)).unix();
@@ -28,6 +28,7 @@ export function uploadCovidData(data: CovidData) {
       daily_deaths: deaths,
       dose1: dose1 === null ? 0 : dose1,
       dose2: dose2 === null ? 0 : dose2,
+      booster: booster === null ? 0 : booster,
     },
   };
   // inserting item into DynamoDB table

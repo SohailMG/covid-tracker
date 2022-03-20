@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const dbHandlers_1 = require("./dbHandlers");
 const OpenDataApi_1 = require("./OpenDataApi");
 const Regions_1 = require("./Regions");
 const TwitterAPI_1 = require("./TwitterAPI");
@@ -19,13 +18,16 @@ async function main() {
     // OpenDataAPI.buildDatasets(covidSCT,"sct")
     // T.extractTweets(tweetsNIL);
     const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
-    storeRecordsToTable(covidDatasets);
+    // storeRecordsToTable(covidDatasets);
 }
 main();
 function storeRecordsToTable(covidDatasets) {
     for (let dataset of covidDatasets) {
         // plotlyHandler(covidENG);
-        dataset.map((data) => (0, dbHandlers_1.uploadCovidData)(data));
-        console.log("[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]");
+        console.table(dataset);
+        // dataset.map((data) => uploadCovidData(data));
+        // console.log(
+        //   "[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]"
+        // );
     }
 }

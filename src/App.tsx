@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import SentimentPie from "./components/SentimentPie";
 import { SkeletonView } from "./components/SkeletonView";
 import RegionGraph from "./components/RegionGraph";
+import VaccinationsChart from "./components/VaccinationsChart";
 type totals = { totalCases: number; totalDeaths: number };
 type SetType = {
   [key: string]: any;
@@ -127,20 +128,20 @@ function App() {
         {graphData.length > 2 ? (
           <div className="flex items-end space-x-2">
             <DataBox
-              key={1}
+              key={Math.random()}
               dataVal={"daily_cases"}
-              covidData={[...graphData[2].covidData].reverse()}
+              covidData={graphData[2].covidData}
               label={"Total Cases"}
-              color={"#1E41AF"}
+              color={"#21BDD1"}
               totalData={totalData?.totalCases}
             />
             {graphData.length > 1 && (
               <SentimentPie sentiment={graphData[0].sentiment} />
             )}
             <DataBox
-              key={2}
+              key={Math.random()}
               dataVal={"daily_deaths"}
-              covidData={[...graphData[2].covidData].reverse()}
+              covidData={graphData[2].covidData}
               label={"Total Deaths"}
               color={"#ca0000c8"}
               totalData={totalData?.totalDeaths}
@@ -158,6 +159,10 @@ function App() {
             }
             covidData={graphData[2].covidData}
           />
+        )}
+        {/* Vaccinations */}
+        {graphData.length > 2 && (
+          <VaccinationsChart covidData={graphData[2].covidData} />
         )}
       </main>
     </div>

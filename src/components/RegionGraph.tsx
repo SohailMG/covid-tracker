@@ -73,7 +73,7 @@ function RegionGraph({
       },
       width: 900,
       height: 500,
-      font_color: "blue",
+      font: { color: "#7FB5E3" },
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "#202A37",
       xaxis: {
@@ -88,8 +88,8 @@ function RegionGraph({
               stepmode: "backward",
             },
             {
-              count: 6,
-              label: "Last 6 Months",
+              count: 12,
+              label: "Past year",
               step: "month",
               stepmode: "backward",
             },
