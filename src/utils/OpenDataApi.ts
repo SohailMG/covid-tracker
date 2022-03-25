@@ -78,6 +78,7 @@ export class OpenDataAPI {
       });
   }
 
+  // builds test and train datasets for each region
   public static buildDatasets(covidData: CovidData[], region: string) {
     // creating traiing dataset
     const trainSet = covidData.slice(100);

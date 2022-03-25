@@ -63,6 +63,7 @@ class OpenDataAPI {
             return response.headers.date;
         });
     }
+    // builds test and train datasets for each region
     static buildDatasets(covidData, region) {
         // creating traiing dataset
         const trainSet = covidData.slice(100);

@@ -15,17 +15,16 @@ import CountUp from "react-countup";
 import moment from "moment";
 
 type Props = {
-  totalData: number | undefined;
   label: string;
   color: string;
   dataVal: string;
   covidData: CovidTableData[];
 };
 
-function DataBox({ totalData, label, color, covidData, dataVal }: Props) {
+function DataBox({ label, color, covidData, dataVal }: Props) {
   const [days, setDays] = useState(covidData.length);
   const [options, setOptions] = useState<number[]>([]);
-  const [newTotal, setnewTotal] = useState<number | null>(null);
+  const [newTotal, setnewTotal] = useState<number>(0);
 
   const graphData = covidData.map(
     ({ daily_cases, timestamp, daily_deaths }) => ({
@@ -62,7 +61,7 @@ function DataBox({ totalData, label, color, covidData, dataVal }: Props) {
       </span>
       <h1 className="text-gray-200 font-extrabold text-xl">
         <CountUp
-          end={newTotal!}
+          end={newTotal}
           duration={2}
           formattingFn={(newTotal) => newTotal.toLocaleString()}
         />

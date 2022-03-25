@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const dbHandlers_1 = require("./dbHandlers");
 const OpenDataApi_1 = require("./OpenDataApi");
 const Regions_1 = require("./Regions");
 const TwitterAPI_1 = require("./TwitterAPI");
@@ -16,18 +17,22 @@ async function main() {
     // OpenDataAPI.buildDatasets(covidNIL,"nil")
     // OpenDataAPI.buildDatasets(covidWLS,"wls")
     // OpenDataAPI.buildDatasets(covidSCT,"sct")
-    // T.extractTweets(tweetsNIL);
-    const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
+    T.extractTweets(tweetsWLS);
+    // uploadTwitterData({
+    //   text: "covid-19 has been a real issue for me",
+    //   id: 99887722,
+    //   created_at: "2020-04-01",
+    //   timestamp: 1648216909389,
+    //   region: "england",
+    // });
+    // const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
     // storeRecordsToTable(covidDatasets);
 }
 main();
+// stores each covid data into dynamodb table
 function storeRecordsToTable(covidDatasets) {
     for (let dataset of covidDatasets) {
-        // plotlyHandler(covidENG);
-        console.table(dataset);
-        // dataset.map((data) => uploadCovidData(data));
-        // console.log(
-        //   "[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]"
-        // );
+        dataset.map((data) => (0, dbHandlers_1.uploadCovidData)(data));
+        console.log("[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]");
     }
 }

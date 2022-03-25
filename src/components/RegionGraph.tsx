@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
 import { CovidTableData, _Predictions } from "../utils/DataInterface";
 
-const colors = ["#6F151D", "#8CC8FA", "#FAFA"];
+const colors = ["#6F151D", "#8F5422", "#FAFA"];
 const titles = ["Mean", "0.9 Quantiles", "0.1 Quantiles"];
 
 function RegionGraph({
@@ -13,30 +13,37 @@ function RegionGraph({
   covidData: CovidTableData[];
   predictions: _Predictions[];
 }) {
-  console.log(predictions);
+  // states
   const [data, setData] = useState<any>({});
   const [layout, setLayout] = useState<any>({});
   const [predGraphData, setPredGraphData] = useState<any>([]);
 
+  // building plotly graph data on page load
   useEffect(() => {
-    buildOriginalData();
+    buildGraphData();
   }, []);
 
-  function buildOriginalData() {
-    const yVals = covidData.map((data) => data.daily_cases);
+  function buildGraphData() {
+    // extracting x andy values from covid table data
+    const yVals = covidData.map((data) => data.daily_cases); // number of cases
     const xVals = covidData.map((data) =>
       moment.unix(data.timestamp).format("YYYY-MM-DD")
-    );
+    ); // daily dates for each yValue
+
+    // calculating the 50th date after original data
     const _50thDate = moment
       .unix(covidData[covidData.length - 1].timestamp)
       .add(50, "day")
       .format("YYYY-MM-DD");
 
+    // building prediction ploty data object
     const predictionsData = predictions.map((data) => {
+      // constructing yVals of originalData + predictions data
       const meanVals = [...yVals, ...data.mean];
       const q09Vals = [...yVals, ...data.quantiles["0.9"]];
       const q01Vals = [...yVals, ...data.quantiles["0.1"]];
 
+      // buidling array of dates of the 50 days after last data point
       let next50Dates = [];
       for (let i = 1; i < 50; i++) {
         const curr = moment(xVals[xVals.length - 1])
@@ -44,7 +51,9 @@ function RegionGraph({
           .format("YYYY-MM-DD");
         next50Dates.push(curr);
       }
+      // adding current xVals to future dates values
       const xAxes = [...xVals, ...next50Dates];
+      // building array of data objects for each prediction object
       const predData = [meanVals, q01Vals, q09Vals].map((data, i) => ({
         name: titles[i],
         type: "scatter",
@@ -56,6 +65,7 @@ function RegionGraph({
       return predData;
     });
 
+    // original data object
     const data = {
       name: "Original",
       type: "scatter",
@@ -66,6 +76,8 @@ function RegionGraph({
     };
     setPredGraphData(predictionsData[0]);
     setData(data);
+
+    // graph layout options
     const layout = {
       title: {
         text: "Covid cases for " + covidData[0].region,

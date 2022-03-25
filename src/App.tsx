@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Flags from "country-flag-icons/react/3x2";
 import Logo from "./components/Logo";
 import { GraphData } from "./utils/DataInterface";
 import AWS from "aws-sdk";
 import DataBox from "./components/DataBox";
-import Skeleton from "react-loading-skeleton";
 import SentimentPie from "./components/SentimentPie";
 import { SkeletonView } from "./components/SkeletonView";
 import RegionGraph from "./components/RegionGraph";
 import VaccinationsChart from "./components/VaccinationsChart";
+import CasesDeathsChart from "./components/CasesDeathsChart";
 type totals = { totalCases: number; totalDeaths: number };
 type SetType = {
   [key: string]: any;
@@ -22,73 +22,51 @@ AWS.config.update({
   },
 });
 
+const URL = "wss://0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod";
+
 function App() {
-  const [graphData, setGraphData] = useState<any>([]);
+  const [graphData, setGraphData] = useState<any>({});
   const [totalData, setTotalData] = useState<totals | null>(null);
   const [mySet, setMySet] = useState<SetType[]>([]);
   const [selectedRegion, setSelectedRegion] = useState("Scotland");
-  const ws = useRef<WebSocket | null>(null);
+  const [ws, setWs] = useState(new WebSocket(URL));
 
   // requests data for given region
   function requestRegionData(e: React.ChangeEvent<HTMLSelectElement>) {
-    setGraphData([]);
+    // resetting the current data array
+    // setGraphData([]);
     setSelectedRegion(e.target.value);
-    ws.current!.send(
-      JSON.stringify({ action: "dispatchData", data: e.target.value })
-    );
-    ws.current!.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setGraphData((prev: any) => [...prev, message]);
-    };
+    // sending a request to apigateway w
+    ws.send(JSON.stringify({ action: "dispatchData", data: e.target.value }));
   }
 
+  const handleResponse = useCallback(
+    (message) => {
+      const data = JSON.parse(message.data);
+      console.log("[WS]=> Message received: ", data);
+      const current = { ...graphData };
+      const key = Object.keys(data)[0];
+      current[key] = data[key];
+      setGraphData(current);
+    },
+    [graphData]
+  );
+
   useEffect(() => {
-    ws.current = new WebSocket(
-      "wss://0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod"
-    );
-    ws.current.onopen = () => {
-      console.log("[WS] => Connection opened");
-
-      let time = 1;
-      const timeValue = setInterval(() => {
-        time = time - 1;
-        if (time <= 0) {
-          clearInterval(timeValue);
-        }
-        ws.current!.send(
-          JSON.stringify({ action: "dispatchData", data: "Scotland" })
-        );
-      }, 1000);
+    ws.onopen = () => {
+      console.log("WebSocket Connected");
+      ws.send(JSON.stringify({ action: "dispatchData", data: selectedRegion }));
     };
-    ws.current.onclose = () => console.log("[WS] => Connection closed");
 
-    const wsCurrent = ws.current;
+    ws.onmessage = handleResponse;
 
     return () => {
-      wsCurrent.close();
+      ws.onclose = () => {
+        console.log("WebSocket Disconnected");
+        setWs(new WebSocket(URL));
+      };
     };
-  }, []);
-
-  useEffect(() => {
-    if (!ws.current) return;
-    ws.current.onmessage = (e) => {
-      const message = JSON.parse(e.data);
-      console.log("[WS] => Message recieved from Api ", message);
-      setGraphData((prev: any) => [...prev, message]);
-      const totals = getTotals(message);
-      setTotalData(totals);
-    };
-  }, [graphData]);
-
-  function getTotals(data: GraphData) {
-    const totalCases = data.covidData.reduce((prev, cur) => {
-      return prev + cur.daily_cases;
-    }, 0);
-    const totalDeaths = data.covidData.reduce((prev, cur) => {
-      return prev + cur.daily_deaths;
-    }, 0);
-    return { totalCases, totalDeaths };
-  }
+  }, [ws.onmessage, ws.onopen, ws.onclose, handleResponse, ws, selectedRegion]);
 
   return (
     <div className="App bg-gray-800 min-h-screen">
@@ -117,52 +95,42 @@ function App() {
             onChange={(e) => requestRegionData(e)}
             className="border border-gray-700 rounded-full font-bold text-gray-200 h-10 pl-5 pr-10 bg-gray-800 hover:bg-gray-800 text-center focus:outline-none appearance-none"
           >
-            <option>England</option>
-            <option>Wales</option>
-            <option>Scotland</option>
-            <option>Northern Ireland</option>
+            <option value={"England"}>England 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option>
+            <option value={"Wales"}>Wales 🏴󠁧󠁢󠁷󠁬󠁳󠁿</option>
+            <option value={"Scotland"}>Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿</option>
+            <option value={"Northern Ireland"}>
+              Northern Ireland 🏴󠁧󠁢󠁮󠁩󠁲󠁿
+            </option>
           </select>
         </div>
       </header>
       <main className="flex flex-col items-center justify-center p-4">
-        {graphData.length > 2 ? (
+        {/* Data Boxes */}
+        {graphData.covidData ? (
           <div className="flex items-end space-x-2">
             <DataBox
               key={Math.random()}
-              dataVal={"daily_cases"}
-              covidData={graphData[2].covidData}
-              label={"Total Cases"}
-              color={"#21BDD1"}
-              totalData={totalData?.totalCases}
+              covidData={graphData?.covidData}
+              color={"#ca0000c8"}
+              dataVal={"daily_deaths"}
+              label={"Total Deaths"}
             />
-            {graphData.length > 1 && (
-              <SentimentPie sentiment={graphData[0].sentiment} />
+            {graphData.sentiment && (
+              <SentimentPie
+                key={Math.random()}
+                sentiment={graphData?.sentiment}
+              />
             )}
             <DataBox
               key={Math.random()}
-              dataVal={"daily_deaths"}
-              covidData={graphData[2].covidData}
-              label={"Total Deaths"}
-              color={"#ca0000c8"}
-              totalData={totalData?.totalDeaths}
+              covidData={graphData?.covidData}
+              color={"#21BDD1"}
+              dataVal={"daily_cases"}
+              label={"Total Cases"}
             />
           </div>
         ) : (
           <SkeletonView />
-        )}
-
-        {/* line graph visual */}
-        {graphData.length > 2 && (
-          <RegionGraph
-            predictions={
-              JSON.parse(graphData[1].predictions.predictions).predictions
-            }
-            covidData={graphData[2].covidData}
-          />
-        )}
-        {/* Vaccinations */}
-        {graphData.length > 2 && (
-          <VaccinationsChart covidData={graphData[2].covidData} />
         )}
       </main>
     </div>
