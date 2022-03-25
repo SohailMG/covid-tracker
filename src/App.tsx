@@ -105,9 +105,10 @@ function App() {
         </div>
       </header>
       <main className="flex flex-col items-center justify-center p-4">
-        {/* Data Boxes */}
+        {/* Top section charts */}
         {graphData.covidData ? (
           <div className="flex items-end space-x-2">
+            {/* Daily deaths chart component */}
             <DataBox
               key={Math.random()}
               covidData={graphData?.covidData}
@@ -115,12 +116,14 @@ function App() {
               dataVal={"daily_deaths"}
               label={"Total Deaths"}
             />
+            {/* Sentiment pie chart */}
             {graphData.sentiment && (
               <SentimentPie
                 key={Math.random()}
                 sentiment={graphData?.sentiment}
               />
             )}
+            {/* Daily cases chart component */}
             <DataBox
               key={Math.random()}
               covidData={graphData?.covidData}
@@ -131,6 +134,30 @@ function App() {
           </div>
         ) : (
           <SkeletonView />
+        )}
+        {/* Covid Cases & Predictions line chart */}
+        {graphData.covidData && graphData.predictions && (
+          <RegionGraph
+            covidData={graphData?.covidData}
+            predictions={
+              JSON.parse(graphData?.predictions.predictions).predictions
+            }
+            key={Math.random()}
+          />
+        )}
+        {/* Covid deaths line chart */}
+        {graphData.covidData && (
+          <CasesDeathsChart
+            covidData={graphData.covidData}
+            key={Math.random()}
+          />
+        )}
+        {/* Covid vaccines bubble chart */}
+        {graphData.covidData && (
+          <VaccinationsChart
+            covidData={graphData.covidData}
+            key={Math.random()}
+          />
         )}
       </main>
     </div>

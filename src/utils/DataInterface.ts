@@ -42,10 +42,10 @@ export interface GraphData {
 }
 
 export interface CovidTableData {
-  [key: string]:any;
-  booster: number | null;
-  dose2: number | null;
-  dose1: number | null;
+  [key: string]: any;
+  booster: number;
+  dose2: number;
+  dose1: number;
   region: string;
   daily_cases: number[];
   daily_deaths: number[];

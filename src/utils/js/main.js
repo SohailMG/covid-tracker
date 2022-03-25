@@ -17,7 +17,7 @@ async function main() {
     // OpenDataAPI.buildDatasets(covidNIL,"nil")
     // OpenDataAPI.buildDatasets(covidWLS,"wls")
     // OpenDataAPI.buildDatasets(covidSCT,"sct")
-    T.extractTweets(tweetsWLS);
+    T.extractTweets(tweetsSCT);
     // uploadTwitterData({
     //   text: "covid-19 has been a real issue for me",
     //   id: 99887722,
