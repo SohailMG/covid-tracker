@@ -10,7 +10,6 @@ const regions = ["England", "Wales", "Scotland", "Northern Ireland"];
 module.exports.datasetsHandler = async () => {
   // query the last 100 data points from each region
   const testDatasets = await getTestData();
-  console.log("🚀 ~ file: database.js ~ line 13 ~ module.exports.datasetsHandler= ~ testDatasets", testDatasets)
   const [eng, wls, sct, nil] = buildDatasets(testDatasets);
 
   return [
@@ -20,6 +19,7 @@ module.exports.datasetsHandler = async () => {
     { data: nil, endpoint: "nil", region: "Norther Ireland" },
   ];
 };
+// dbHandlers_1();
 
 function buildDatasets(testDatasets) {
   try {
@@ -59,7 +59,7 @@ async function getTestData() {
         },
         KeyConditionExpression: "#region = :rgn and #timestamp < :startDate",
         ExpressionAttributeValues: {
-          ":rgn": region.toLowerCase(),
+          ":rgn": region,
           ":startDate": Date.now(),
         },
         ScanIndexForward: false,

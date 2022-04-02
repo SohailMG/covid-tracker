@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 const AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-1" });
 const db = require("./database");
 const CONN_ENDPOINT = "0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod/";
 
@@ -38,28 +37,27 @@ const dispatchToAll = async (connIds, data) => {
 };
 
 exports.handler = async (event) => {
+    
+    
+
   // if new user is connected
   if (event.requestContext) {
-    const region = event.body.data;
-    const { connectionId: connId } = event.requestContext;
-    const sentiment = await db.queryTableWithLimit(
-      "TweetsSentiment",
-      region.toLowerCase(),
-      50
-    );
-    const predictions = await db.queryPredictions(region);
-    const covidData = await db.queryTableData(
-      "CovidStats",
-      region.toLowerCase()
-    );
-    await dispatchToOne(connId, { sentiment, predictions});
-    return {
-      statusCode: 200,
-      body: JSON.stringify("Data sent to user with ID ", connId),
-    };
+      console.log("ApiGateway Request")
+      const reqBody = JSON.parse(event.body);
+      const { connectionId: connId } = event.requestContext;
+      const pKey = reqBody.data.includes("Northern") ? "northern+ireland" :reqBody.data.toLowerCase() ;
+      const sentiment = await db.queryTableWithLimit("TweetsSentiment",pKey,200);
+      const predictions = await db.queryPredictions(reqBody.data);
+      const covidData = await db.queryTableData("CovidStats", reqBody.data.toLowerCase());
+      await dispatchToOne(connId,  {sentiment});
+      await dispatchToOne(connId,  {predictions})
+      await dispatchToOne(connId,  {covidData})
+      return {statusCode:200,body:JSON.stringify("Data sent to user with ID ",connId)}
+     
   }
   // if there is new predictions/sentiment data
   if (event.Records) {
+    console.log("Database update request")
     // if only predictions table updated
     if (event.Records[0].eventSourceARN.includes("CovidPredictions")) {
       // extract new records from event
@@ -69,27 +67,17 @@ exports.handler = async (event) => {
       const covidData = await db.queryTableData("CovidStats", region.S);
       // fetching connection ids of connected users
       const { Items: connIds } = await db.getTableData("WebSocketClients");
-      await dispatchToAll(connIds, {
-        covidData,
-        predictions,
-        event: "predictions",
-      });
+      await dispatchToAll(connIds, { covidData, predictions,event:"predictions" });
     }
     // if only tweets sentiment table updated
     else {
+      const { region, timesta } =
+        event.Records[0].dynamodb.NewImage;
       // extracting sentiment for each added tweet
-      const sentiment = event.Records.map((record) => {
-        if (
-          record.eventName === "INSERT" &&
-          record.eventSourceARN.includes("TweetsSentiment")
-        ) {
-          const { region, sentiment } = record.dynamodb.NewImage;
-          return { sentiment, region };
-        }
-        return false;
-      });
+      const sentiment = await db.queryTableWithLimit("TweetsSentiment",region.S,200);
+      console.log(sentiment)
       const { Items: connIds } = await db.getTableData("WebSocketClients");
-      await dispatchToAll(connIds, { sentiment, event: "sentiment" });
+      await dispatchToAll(connIds, { sentiment, event: "update" });
     }
   }
 

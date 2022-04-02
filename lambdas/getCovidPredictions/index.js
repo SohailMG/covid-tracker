@@ -1,17 +1,17 @@
 //Import AWS
 let AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-1" });
 const { datasetsHandler } = require("./database");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = async (event) => {
-  // getting last 100 datapoints for each region
-  const datasets = await datasetsHandler();
 
+exports.handler = async (event) => {
+   // getting last 100 datapoints for each region
+  const datasets = await datasetsHandler();
+  
   //Parameters for calling endpoint
   let params = {
-    EndpointName: `covid-${datasets[1].endpoint}-endpoint`,
-    Body: JSON.stringify(datasets[1].data),
+    EndpointName: `covid-${datasets[0].endpoint}-endpoint`,
+    Body: JSON.stringify(datasets[0].data),
     ContentType: "application/json",
     Accept: "application/json",
   };
@@ -19,10 +19,7 @@ exports.handler = async (event) => {
   let awsRuntime = new AWS.SageMakerRuntime({});
   awsRuntime.invokeEndpoint(params, (err, data) => {
     if (err) {
-      console.error(
-        "🚀 ~ file: index.js ~ line 22 ~ awsRuntime.invokeEndpoint ~ err",
-        err
-      );
+      console.log("🚀 ~ file: index.js ~ line 22 ~ awsRuntime.invokeEndpoint ~ err", err)
       //Return error response
       const response = {
         statusCode: 500,
@@ -39,7 +36,7 @@ exports.handler = async (event) => {
         TableName: "CovidPredictions",
         Item: {
           timestamp: Date.now(),
-          region: datasets[1].region,
+          region: datasets[0].region,
           predictions: JSON.stringify(responseData),
         },
       };
@@ -55,7 +52,7 @@ exports.handler = async (event) => {
         return response;
       });
 
-      return { statusCode: 200, body: "Predictions stored" };
+      return {statusCode:200,body:"Predictions stored"}
     }
   });
 };

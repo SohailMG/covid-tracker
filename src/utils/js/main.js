@@ -11,21 +11,19 @@ async function main() {
     const [covidENG, covidWLS, covidSCT, covidNIL] = await Promise.all(Regions_1.REGIONS.map((region) => new OpenDataApi_1.OpenDataAPI(region.name, "nation").fetchData()));
     // fetching tweets for each region
     const [tweetsENG, tweetsWLS, tweetsSCT, tweetsNIL] = await Promise.all(Regions_1.REGIONS.map((region) => new TwitterAPI_1.TwitterAPI().fetchTweetsByLocation(region)));
-    /* building datasets for each regions
-       and storing uploading them to s3 bucket */
+    // ---uploading synthetic datasets to S3 bucket---
+    // syntheticHandler();
+    /* --- building datasets for each regions
+       and storing uploading them to s3 bucket --- */
     // OpenDataAPI.buildDatasets(covidENG,"eng")
     // OpenDataAPI.buildDatasets(covidNIL,"nil")
     // OpenDataAPI.buildDatasets(covidWLS,"wls")
     // OpenDataAPI.buildDatasets(covidSCT,"sct")
-    T.extractTweets(tweetsSCT);
-    // uploadTwitterData({
-    //   text: "covid-19 has been a real issue for me",
-    //   id: 99887722,
-    //   created_at: "2020-04-01",
-    //   timestamp: 1648216909389,
-    //   region: "england",
-    // });
-    // const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
+    // --- storing tweets to dynamodb table ---
+    const regionsTweets = [tweetsENG, tweetsWLS, tweetsSCT, tweetsNIL];
+    storeRegionsTweets(regionsTweets, T);
+    // --- storing covid data for each region to dynamodb table ---
+    // const covidDatasets:CovidData[][] = [covidENG, covidWLS, covidSCT, covidNIL];
     // storeRecordsToTable(covidDatasets);
 }
 main();
@@ -35,4 +33,10 @@ function storeRecordsToTable(covidDatasets) {
         dataset.map((data) => (0, dbHandlers_1.uploadCovidData)(data));
         console.log("[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]");
     }
+}
+function storeRegionsTweets(regionsTweets, T) {
+    regionsTweets.forEach((tweets) => {
+        T.uploadTweets(tweets);
+        console.log("[DynamoDB] => Stored Tweets for region [" + tweets.region.name + "]");
+    });
 }

@@ -16,7 +16,7 @@ exports.writeToFile = writeToFile;
 async function getFileData(fileName) {
     const readFile = (0, util_1.promisify)(fs_1.default.readFile);
     const jsonString = await readFile("./datasets/" + fileName);
-    const fileData = JSON.parse(jsonString.toString('utf8'));
+    const fileData = JSON.parse(jsonString.toString("utf8"));
     return fileData;
 }
 exports.getFileData = getFileData;

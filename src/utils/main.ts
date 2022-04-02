@@ -2,6 +2,7 @@ import { uploadCovidData, uploadTwitterData } from "./dbHandlers";
 import { CovidData, OpenDataAPI } from "./OpenDataApi";
 import { REGIONS } from "./Regions";
 import { TweetResponse, TwitterAPI } from "./TwitterAPI";
+import {syntheticHanlder as syntheticHandler} from "./synthetic";
 
 // main program runner
 async function main(): Promise<void> {
@@ -19,22 +20,22 @@ async function main(): Promise<void> {
       REGIONS.map((region) => new TwitterAPI().fetchTweetsByLocation(region))
     );
 
-  /* building datasets for each regions
-     and storing uploading them to s3 bucket */
+    // ---uploading synthetic datasets to S3 bucket---
+    // syntheticHandler();
+
+  /* --- building datasets for each regions
+     and storing uploading them to s3 bucket --- */
   // OpenDataAPI.buildDatasets(covidENG,"eng")
   // OpenDataAPI.buildDatasets(covidNIL,"nil")
   // OpenDataAPI.buildDatasets(covidWLS,"wls")
   // OpenDataAPI.buildDatasets(covidSCT,"sct")
-  T.extractTweets(tweetsSCT);
-  // uploadTwitterData({
-  //   text: "covid-19 has been a real issue for me",
-  //   id: 99887722,
-  //   created_at: "2020-04-01",
-  //   timestamp: 1648216909389,
-  //   region: "england",
-  // });
 
-  // const covidDatasets = [covidENG, covidWLS, covidSCT, covidNIL];
+  // --- storing tweets to dynamodb table ---
+  const regionsTweets: TweetResponse[] = [tweetsENG, tweetsWLS, tweetsSCT, tweetsNIL];
+  storeRegionsTweets(regionsTweets,T);
+
+  // --- storing covid data for each region to dynamodb table ---
+  // const covidDatasets:CovidData[][] = [covidENG, covidWLS, covidSCT, covidNIL];
   // storeRecordsToTable(covidDatasets);
 }
 
@@ -48,4 +49,11 @@ function storeRecordsToTable(covidDatasets: CovidData[][]) {
       "[DynamoDB] => Stored Covid Data for region [" + dataset[0].region + "]"
     );
   }
+}
+
+function storeRegionsTweets(regionsTweets: TweetResponse[], T: TwitterAPI) {
+  regionsTweets.forEach((tweets) => {
+    T.uploadTweets(tweets);
+    console.log("[DynamoDB] => Stored Tweets for region [" + tweets.region.name + "]");
+  });
 }

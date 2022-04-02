@@ -11,27 +11,30 @@ export interface Dataset {
   start: string | number;
   target: number[];
 }
-
-const predictions = (async () => {
+/** fetches synthetic dataset, constructs a test and train datasets
+ * then uploads the datasets to s3 bucket
+*/
+export const syntheticHanlder = async () => {
+  // fetching dataset
   const dataset = (await axios.get(DatasetURI + MY_SID)).data;
+  // building test and train sets
   buildDatasets(dataset);
+  // getting test and train sets from local files
   const testSetData = await getFileData("synth_test.json");
   const trainSetData = await getFileData("synth_train.json");
+  // uploading test and train sets to S3 bucket
   uploadToS3("cst3130-synthetic-dataset", testSetData, "synth_test.json");
   uploadToS3("cst3130-synthetic-dataset", trainSetData, "synth_train.json");
-  // const xVals = target.map((val: number, i: number) => i);
-  // const plotlyResults = await plotData(MY_SID, xVals, target);
-  // console.log(plotlyResults)
-  // const testSet = getFileData("synthetic_test.json");
-})();
+
+};
 
 function buildDatasets(dataset: Dataset) {
   const { start, target } = dataset;
   const trainSet: Dataset = { start, target: target.slice(0, 400) };
 
   const testStartDate = moment(start)
-    .add(400, "h")
-    .format("YYYY-MM-DD hh:mm:ss");
+  .add(400, "h")
+  .format("YYYY-MM-DD hh:mm:ss");
   const testSet: Dataset = { start: testStartDate, target: target.slice(400) };
 
   writeToFile({ fileName: "./datasets/synth_test.json", data: testSet });

@@ -1,5 +1,5 @@
-import fs from 'fs';
-import {promisify} from "util"
+import fs from "fs";
+import { promisify } from "util";
 
 export interface Dataset {
   start: string | number;
@@ -11,22 +11,15 @@ export interface FileData {
   data: Dataset;
 }
 
-export function writeToFile(fileData:FileData){
-    fs.writeFile(
-      fileData.fileName,
-      JSON.stringify(fileData.data),
-      (err:any) => {
-          if(err) throw err;
-      }
-    );
-
-
-
+export function writeToFile(fileData: FileData) {
+  fs.writeFile(fileData.fileName, JSON.stringify(fileData.data), (err: any) => {
+    if (err) throw err;
+  });
 }
 
-export async function getFileData(fileName:string){
+export async function getFileData(fileName: string) {
   const readFile = promisify(fs.readFile);
   const jsonString = await readFile("./datasets/" + fileName);
-  const fileData:Dataset = JSON.parse(jsonString.toString('utf8'));
-  return fileData
+  const fileData: Dataset = JSON.parse(jsonString.toString("utf8"));
+  return fileData;
 }

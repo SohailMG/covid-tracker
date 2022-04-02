@@ -21,6 +21,7 @@ module.exports.getTableData = async (tableName) => {
 };
 
 module.exports.queryTableData = async(tableName,partKey)=>{
+    const query = "#region = :rgn and #timestamp < :startDate"
     const params = {
       TableName: tableName,
       ExpressionAttributeNames: { "#region": "region", "#timestamp": "timestamp" }, // avoiding reserved keywords exceptions

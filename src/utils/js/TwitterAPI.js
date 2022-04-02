@@ -45,7 +45,7 @@ class TwitterAPI {
      * loops through array of tweets
      * @param tweets response object of Twitter API
      */
-    extractTweets(tweets) {
+    uploadTweets(tweets) {
         tweets.results.statuses.forEach((tweet) => {
             // destructured tweet object
             const { text, id, created_at } = tweet;
