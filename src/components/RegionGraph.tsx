@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Plot from "react-plotly.js";
-import { CovidTableData, _Predictions } from "../utils/DataInterface";
+import { CovidTableData, _Predictions } from "../resources/DataInterface";
 
 const colors = ["#6F151D", "#8F5422", "#FAFA"];
 const titles = ["Mean", "0.9 Quantiles", "0.1 Quantiles"];
@@ -43,7 +43,7 @@ function RegionGraph({
       const q09Vals = [...yVals, ...data.quantiles["0.9"]];
       const q01Vals = [...yVals, ...data.quantiles["0.1"]];
 
-      // buidling array of dates of the 50 days after last data point
+      // building array of dates of the 50 days after last data point
       let next50Dates = [];
       for (let i = 1; i < 50; i++) {
         const curr = moment(xVals[xVals.length - 1])

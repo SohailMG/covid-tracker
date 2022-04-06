@@ -12,6 +12,7 @@ function SentimentPie({ sentiment }: any) {
     setActiveIndex(index);
   };
 
+  // extracting sentiment labels
   const countSentimentValues = () => {
     const sentiments: string[] = [
       ...new Set<string>(
@@ -20,6 +21,7 @@ function SentimentPie({ sentiment }: any) {
         )
       ),
     ];
+    // counting occurrences of sentiment labels
     const pieData = sentiments.map(
       (item): PieData => ({
         value: sentiment.reduce(

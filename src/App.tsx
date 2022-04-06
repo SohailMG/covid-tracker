@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Flags from "country-flag-icons/react/3x2";
 import Logo from "./components/Logo";
-import { GraphData } from "./utils/DataInterface";
+import { GraphData } from "./resources/DataInterface";
 import AWS from "aws-sdk";
 import DataBox from "./components/DataBox";
 import SentimentPie from "./components/SentimentPie";
 import { SkeletonView } from "./components/SkeletonView";
 import RegionGraph from "./components/RegionGraph";
 import VaccinationsChart from "./components/VaccinationsChart";
-import CasesDeathsChart from "./components/CasesDeathsChart";
-type totals = { totalCases: number; totalDeaths: number };
-type SetType = {
-  [key: string]: any;
-};
+import DeathsLineChart from "./components/DeathsLineChart";
+
 AWS.config.update({
   region: "us-east-1",
   credentials: {
@@ -22,43 +19,43 @@ AWS.config.update({
   },
 });
 
-const URL = "wss://0p40kzqqce.execute-api.us-east-1.amazonaws.com/prod";
+const URL = "wss://4l9y6ww7j5.execute-api.us-east-1.amazonaws.com/prod";
 
 function App() {
-  const [graphData, setGraphData] = useState<any>({});
-  const [totalData, setTotalData] = useState<totals | null>(null);
-  const [mySet, setMySet] = useState<SetType[]>([]);
-  const [selectedRegion, setSelectedRegion] = useState("Scotland");
+  const [graphData, setGraphData] = useState<any>({
+    sentiment: null,
+    predictions: null,
+    covidData: null,
+  });
+  const [testData, settestData] = useState<any[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState("England");
   const [ws, setWs] = useState(new WebSocket(URL));
 
   // requests data for given region
   function requestRegionData(e: React.ChangeEvent<HTMLSelectElement>) {
-    // resetting the current data array
-    // setGraphData([]);
     setSelectedRegion(e.target.value);
     // sending a request to apigateway w
     ws.send(JSON.stringify({ action: "dispatchData", data: e.target.value }));
   }
 
-  const handleResponse = useCallback(
-    (message) => {
+  useEffect(() => {
+    // setting up websocket
+    ws.onopen = () => {
+      console.log("[WS] => WebSocket Connected ");
+      ws.send(JSON.stringify({ action: "dispatchData", data: selectedRegion }));
+    };
+
+    // receiving data from websocket
+    ws.onmessage = (message) => {
+      // storing data in state
       const data = JSON.parse(message.data);
       console.log("[WS]=> Message received: ", data);
       const current = { ...graphData };
       const key = Object.keys(data)[0];
       current[key] = data[key];
       setGraphData(current);
-    },
-    [graphData]
-  );
-
-  useEffect(() => {
-    ws.onopen = () => {
-      console.log("WebSocket Connected");
-      ws.send(JSON.stringify({ action: "dispatchData", data: selectedRegion }));
+      settestData((prev) => [...prev, data]);
     };
-
-    ws.onmessage = handleResponse;
 
     return () => {
       ws.onclose = () => {
@@ -66,7 +63,7 @@ function App() {
         setWs(new WebSocket(URL));
       };
     };
-  }, [ws.onmessage, ws.onopen, ws.onclose, handleResponse, ws, selectedRegion]);
+  }, [ws.onmessage, ws.onopen, ws.onclose, ws, selectedRegion, graphData]);
 
   return (
     <div className="App bg-gray-800 min-h-screen">
@@ -147,7 +144,7 @@ function App() {
         )}
         {/* Covid deaths line chart */}
         {graphData.covidData && (
-          <CasesDeathsChart
+          <DeathsLineChart
             covidData={graphData.covidData}
             key={Math.random()}
           />

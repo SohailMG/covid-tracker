@@ -7,8 +7,8 @@ import {
   Area,
   ResponsiveContainer,
 } from "recharts";
-import { CovidTableData } from "../utils/DataInterface";
-import { CovidData } from "../utils/OpenDataApi";
+import { CovidTableData } from "../resources/DataInterface";
+import { CovidData } from "../resources/OpenDataApi";
 import { MdCoronavirus } from "react-icons/md";
 import { IoSkullSharp } from "react-icons/io5";
 import CountUp from "react-countup";

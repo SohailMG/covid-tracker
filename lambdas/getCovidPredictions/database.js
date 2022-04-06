@@ -8,8 +8,9 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const regions = ["England", "Wales", "Scotland", "Northern Ireland"];
 
 module.exports.datasetsHandler = async () => {
-  // query the last 100 data points from each region
+  // query the last 200 data points from each region
   const testDatasets = await getTestData();
+  // building request body for each dataset
   const [eng, wls, sct, nil] = buildDatasets(testDatasets);
 
   return [
@@ -19,8 +20,7 @@ module.exports.datasetsHandler = async () => {
     { data: nil, endpoint: "nil", region: "Norther Ireland" },
   ];
 };
-// dbHandlers_1();
-
+// builds request body for given dataset to generate predictions
 function buildDatasets(testDatasets) {
   try {
     return testDatasets.map((dataset) => {
@@ -48,6 +48,7 @@ function buildDatasets(testDatasets) {
   }
 }
 
+// retrieves the last 200 data points for each region
 async function getTestData() {
   return await Promise.all(
     regions.map(async (region) => {
@@ -59,11 +60,11 @@ async function getTestData() {
         },
         KeyConditionExpression: "#region = :rgn and #timestamp < :startDate",
         ExpressionAttributeValues: {
-          ":rgn": region,
+          ":rgn": region.toLowerCase(),
           ":startDate": Date.now(),
         },
         ScanIndexForward: false,
-        Limit: 100, // ascending order
+        Limit: 200, // ascending order
       };
 
       const { Items: covidData } = await docClient.query(params).promise();

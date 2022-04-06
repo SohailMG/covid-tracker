@@ -36,8 +36,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "wsDispatch": "node -e \"console.log(require('./lambdas/wsDispatch/index.js').handler(require('./lambdas/wsDispatch/event-1.json')));\"",
-    "getPredictions": "node -e \"console.log(require('./lambdas/getCovidPredictions/index.js').handler(require('./lambdas/wsDispatch/event.json')));\"",
-    "plotSynth": "node -e \"console.log(require('./lambdas/plotSyntheticData/index.js').handler(require('./lambdas/wsDispatch/event.json')));\""
+    "getPredictions": "node -e \"console.log(require('./lambdas/getCovidPredictions/index.js').handler(require('./lambdas/getCovidPredictions/event.json')));\"",
+    "plotSynth": "node -e \"console.log(require('./lambdas/plotSyntheticData/index.js').handler(require('./lambdas/wsDispatch/event.json')));\"",
+    "getSentiment": "node -e \"console.log(require('./lambdas/getCovidSentiment/index.js').handler(require('./lambdas/getCovidPredictions/event.json')));\""
   },
   "eslintConfig": {
     "extends": [
