@@ -36,13 +36,14 @@ async function main(): Promise<void> {
 
   T.uploadTweets(tweetsSCT);
 
-  // uploadTwitterData({
-  //   text: "Covid-19 is getting better and better here in scotland",
-  //   id: 22113322,
-  //   created_at: "2020-04-01T12:00:00Z",
-  //   timestamp: 1586233600,
-  //   region: "scotland",
-  // });
+  // UNCOMMENT -> to upload a single tweet
+    /* uploadTwitterData({
+       text: "Covid-19 is getting better and better here in scotland",
+       id: 22113322,
+       created_at: "2020-04-01T12:00:00Z",
+       timestamp: 1586233600,
+       region: "scotland",
+     }); */
 
   // UNCOMMENT -> to stor covid data for each region to dynamodb table
   /* const covidDatasets:CovidData[][] = [covidENG, covidWLS, covidSCT, covidNIL];
@@ -60,7 +61,7 @@ function storeRecordsToTable(covidDatasets: CovidData[][]) {
     );
   }
 }
-
+// stores each tweet data into dynamodb table
 function storeRegionsTweets(regionsTweets: TweetResponse[], T: TwitterAPI) {
   regionsTweets.forEach((tweets) => {
     T.uploadTweets(tweets);
